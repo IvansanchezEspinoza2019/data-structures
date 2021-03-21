@@ -37,9 +37,9 @@ class List {
         void sortDataMerge(const int&,const int&);   
 
     public:
-        //constructor
+        // constructor
         List();                 
-        //2nd constructor       
+        // 2nd constructor       
         List(const List<T,ARRAYSIZE> &);      
 
         //methods
