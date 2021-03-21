@@ -34,7 +34,8 @@ class List {
         int last;                                 // the last element position
         bool isValidPos(const int&);
         void copyAll(const List<T,ARRAYSIZE> & s);
-        void sortDataMerge(const int&,const int&);   
+        void sortDataMerge(const int&, const int&);
+        void swapData(T &a, T &b); // swap data   
 
     public:
         // constructor
@@ -61,7 +62,6 @@ class List {
         int findData(const T&);    // lineal search
         int findDataBin(const T&); // binary search
         //sorting
-        void swapData(T &a, T &b); // swap data
         void sortDataMerge();      // merge sort
         void sortDataBubble();     // bubble sort
 
@@ -95,21 +95,21 @@ List<T, ARRAYSIZE>& List<T,ARRAYSIZE>::operator =(const List<T,ARRAYSIZE>&t)  //
 }
 
 template<class T, int ARRAYSIZE>
-bool List<T, ARRAYSIZE> ::isEmpty() { //verify if the list is empty
+bool List<T, ARRAYSIZE>::isEmpty() { //verify if the list is empty
     return last == -1;
 }
 
 template<class T, int ARRAYSIZE>
-bool List<T, ARRAYSIZE> ::isFull() { // verify if the list is full
+bool List<T, ARRAYSIZE>::isFull() { // verify if the list is full
     return last == ARRAYSIZE - 1;
 }
-template<clas T, int ARRAYSIZE>
+template<class T, int ARRAYSIZE>
 void List<T, ARRAYSIZE>::push_back(const T &e){
     insertData(last+1, e);
 }
 
 template<class T, int ARRAYSIZE>
-void List<T, ARRAYSIZE> ::insertData(const int &p, const T &e) { // inserts data to the list
+void List<T, ARRAYSIZE>::insertData(const int &p, const T &e) { // inserts data to the list
     if(isFull()) {      // if full list
         throw Exception("Data overflow: the list is full in insertData()");
     }
@@ -132,7 +132,7 @@ void List<T, ARRAYSIZE> ::insertData(const int &p, const T &e) { // inserts data
 }
 
 template<class T, int ARRAYSIZE>
-void List<T, ARRAYSIZE> ::deleteData(const int&p) { // delete an element from the list
+void List<T, ARRAYSIZE>::deleteData(const int&p) { // delete an element from the list
     if(isEmpty()) {
         throw Exception("Empty list, deleteData()");
         return;
@@ -154,7 +154,7 @@ void List<T, ARRAYSIZE> ::deleteData(const int&p) { // delete an element from th
 }
 
 template<class T, int ARRAYSIZE>
-int List<T, ARRAYSIZE> ::getFirst() {  // get the index of the first element
+int List<T, ARRAYSIZE>::getFirst() {  // get the index of the first element
     if(isEmpty()) {
         return -1;
         }
@@ -162,12 +162,12 @@ int List<T, ARRAYSIZE> ::getFirst() {  // get the index of the first element
 }
 
 template<class T, int ARRAYSIZE>
-int List<T, ARRAYSIZE> ::getLast() { // get the index of last element
+int List<T, ARRAYSIZE>::getLast() { // get the index of last element
     return last;
 }
 
 template<class T, int ARRAYSIZE>
-int List<T, ARRAYSIZE> ::getPrevPos(const int&p) { // get the index of the previos element
+int List<T, ARRAYSIZE>::getPrevPos(const int&p) { // get the index of the previos element
     if(isEmpty() or p<1 or p>last) {
         return -1;
         }
@@ -175,7 +175,7 @@ int List<T, ARRAYSIZE> ::getPrevPos(const int&p) { // get the index of the previ
 }
 
 template<class T, int ARRAYSIZE>
-int List<T, ARRAYSIZE> ::getNextPos(const int&p) { // get the index of the next element
+int List<T, ARRAYSIZE>::getNextPos(const int&p) { // get the index of the next element
     if(isEmpty() or p < 0 or p>last-1) {
         return -1;
         }
@@ -183,7 +183,7 @@ int List<T, ARRAYSIZE> ::getNextPos(const int&p) { // get the index of the next 
 }
 
 template<class T, int ARRAYSIZE>
-T List<T, ARRAYSIZE> ::retrieve(const int&p) { // get the data from an index
+T List<T, ARRAYSIZE>::retrieve(const int&p) { // get the data from an index
     if(isEmpty()) {
         throw Exception("Empty List, retrieve()");
         }
@@ -194,7 +194,7 @@ T List<T, ARRAYSIZE> ::retrieve(const int&p) { // get the data from an index
 }
 
 template<class T, int ARRAYSIZE>
-void List<T,ARRAYSIZE> ::deleteAll() { // delete everything
+void List<T,ARRAYSIZE>::deleteAll() { // delete everything
 // just with this line because al data is going to be override when inserting
     last = -1; 
 }
@@ -216,7 +216,7 @@ string List<T,ARRAYSIZE>::toString() // to_string() method
 
     int i= 0;
     while (i<= last) {
-        result += data[i].toString() + "-";
+        result += std::to_string(data[i]) + "-";
         i++;
     }
 
@@ -279,12 +279,12 @@ int List<T,ARRAYSIZE>::findDataBin(const T &e){ // binary search, needs the list
     return -1;
 }
 template<class T, int ARRAYSIZE>
-int List<T, ARRAYSIZE> ::sortDataMerge() {
-    sorDataMerge(0, last);
+void List<T, ARRAYSIZE>::sortDataMerge() {
+    List::sortDataMerge(0, last);
 }
 
 template<class T, int ARRAYSIZE>     // merge sort
-int List<T, ARRAYSIZE> ::sortDataMerge(const int& leftEdge,const int& rightEdge)() {
+void List<T, ARRAYSIZE>::sortDataMerge(const int& leftEdge,const int& rightEdge){
     if(leftEdge>= rightEdge){	        // stoping step
     	return;
     }
@@ -321,7 +321,7 @@ int List<T, ARRAYSIZE> ::sortDataMerge(const int& leftEdge,const int& rightEdge)
             here is doing the other case, when the second array(j index) is 
             smaller than the first one(i index).
             */
-    	    while(j<= righEdge and temp[j]<= temp[i]){
+    	    while(j<= rightEdge and temp[j]<= temp[i]){
     		    data[x++]= temp[j++]; //  so puts the value of the elem in j index
     	    }
         }
@@ -334,7 +334,7 @@ int List<T, ARRAYSIZE> ::sortDataMerge(const int& leftEdge,const int& rightEdge)
         // means that were not selected because of the 2nd array had smaller values
     	data[x++]= temp[i++];
     }
-    while(j<= righEdge){  
+    while(j<= rightEdge){  
         // means that were not selectd because of 1st array had smaller values
     	data[x++]= temp[j++];
     }  
