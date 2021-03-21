@@ -1,0 +1,5 @@
+## ignore all C++ debug files and
+## all generated Visual Code files
+
+*.out
+*.vscode
