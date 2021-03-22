@@ -1,6 +1,10 @@
 #ifndef NODE_H
 #define NODE_H
 #include<iostream>
+/*
+    The simple linked list uses this node, so this file
+    need to be in the same directory as the list.
+*/
 
 template <class T>
 class Node{
@@ -8,9 +12,10 @@ private:
     T data;
     Node<T>* next;
 public:
+    // constructor
     Node();
     Node(const T&);
-
+    // methods
     T getData() const;
     Node<T>* getNext();
     void setData(const T&);
@@ -51,8 +56,6 @@ void Node<T>::setNext(Node<T> *p)
 {
     next = p;
 }
-
-
 
 #endif // NODE_H
 
