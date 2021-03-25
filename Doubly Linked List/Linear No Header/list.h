@@ -1,5 +1,5 @@
 /*
-    This is a Doubly Linked List Linear with No Header
+    This is a Linear Doubly Linked List with No Header
 */
 
 #ifndef LIST_H_INCLUDED
@@ -7,13 +7,13 @@
 #include <exception>
 #include <string>
 #include <iostream>
-#include "node.h"   // include the doubly linked node
+#include "node.h"   // include the list node
 
 
 template<class T>
 class List {
     private:
-       Node<T>* anchor;  //anchor
+        Node<T>* anchor;  //anchor
 
         bool isValidPos(Node<T>*)const;
         void copyAll(const List<T>&);
@@ -24,6 +24,13 @@ class List {
         List(const List<T> &);
         List<T>& operator = (const List<T>&);
         ~List(); 
+
+        // iterator class and methods
+        class Iterator;
+
+        Iterator begin(){ return Iterator(anchor); }
+        Iterator end(){ return Iterator(nullptr);}
+        
 
         //clase Exception anidada
         class Exception : public std::exception {
@@ -37,22 +44,67 @@ class List {
                 return msg.c_str();
                 }
         };
+
         //methods
         bool isEmpty();
+        void insert(Node<T>*, const T&);
+        void push_front(const T&);
+        void push_back(const T &);
+        void deleteData(const T&);
+        void erase(Node<T>*);
+        void deleteAll();
+        T retrieve(Node<T>*) const; 
 
-        void insertData(Node<T>*, const T&);
-        void deleteData(Node<T>*);
-        Node<T>* getFirst();
-        Node<T>* getLast();
+        Node<T>* getFirst();  // first elem
+        Node<T>* getLast();   // last elem
         Node<T>* getPrevPos(Node<T>*);
         Node<T>* getNextPos(Node<T>*);
-        T retrieve(Node<T>*) const; 
-        void deleteAll();
-        std::string toString(); 
+        Node<T>* find(const T&);
+       
+        // iterator class
+        class Iterator{
+            private:
+                Node<T>* _iter;
 
-        Node<T>* findData(const T&);
+            public:
+                Iterator():_iter(nullptr){} // init iterator
+                Iterator( Node<T>* _e) : _iter(_e){}
 
-        void sortDataMerge();
+                Node<T>* getIter(){
+                    return _iter;
+                }
+
+                Iterator& operator=(const Node<T>* &_e){
+                    this->_iter = _e;
+                    return *this;
+                }
+
+                bool operator != (const Iterator &_e){
+                    return _iter != _e._iter;
+                }
+
+                bool operator == (const Iterator &_e){
+                    return _iter == _e._iter;
+                }
+
+                T operator *(){
+                    if(_iter == nullptr){
+                        throw Exception("Empty List, iterator");
+                    }
+                    return _iter->getData();
+                }
+                // prefix overload
+                Iterator& operator++(){ // first make the increment, then return the object
+                    _iter = _iter->getNext();
+                    return *this;
+                }
+                // postfix overload
+                Iterator operator++(int){ // first asign the object, then make the increment
+                    Iterator temp = *this;
+                    _iter = _iter->getNext();
+                    return temp;
+                }
+        };     
 };
 
 #include "list.h"
@@ -60,7 +112,7 @@ class List {
 using namespace std;
 
 template<class T>
-bool List<T>::isValidPos(Node<T>* p) const {
+bool List<T>::isValidPos(Node<T>* p) const { // if a given position is valid
     Node<T>* aux(anchor);
     while (aux!= nullptr) {
         if(aux == p){
@@ -70,12 +122,13 @@ bool List<T>::isValidPos(Node<T>* p) const {
     }
     return false;
 }
+
 template<class T>
 List<T>::List():anchor(nullptr){ // initialize the main node
 }
 
 template<class T>
-List<T>::List(const List<T> &s)
+List<T>::List(const List<T> &s) // copy a hole list
 {
     copyAll(s);
 }
@@ -86,7 +139,17 @@ bool List<T>::isEmpty() {    // empty list
 }
 
 template<class T>
-void List<T>::insertData(Node<T>* p, const T &e) {
+void List<T>::push_front(const T&e){  // add elements on the front
+    insert(nullptr, e);
+}
+
+template<class T>
+void List<T>::push_back(const T&e){  // add at the end
+    insert(getLast(), e);
+}
+
+template<class T>
+void List<T>::insert(Node<T>* p, const T &e) { // inserts a element in a given position
     if(p != nullptr and !isValidPos(p)){
         throw Exception("Invalid position, insertData()");
     }
@@ -115,7 +178,12 @@ void List<T>::insertData(Node<T>* p, const T &e) {
 }
 
 template<class T>
-void List<T>::deleteData(Node<T>* p) {
+void List<T>::deleteData(const T &e){  // delete a element finding its position on the list
+    erase(find(e));
+}
+
+template<class T>
+void List<T>::erase(Node<T>* p) {   // erase a given postion of the list
     if(!isValidPos(p)){
         throw Exception("invalid position, delete()");
     }
@@ -128,16 +196,16 @@ void List<T>::deleteData(Node<T>* p) {
     if (p == anchor) { // if p is the anchor, then scrolls one elmenent forward
         anchor = anchor->getNext();
     }
-
     delete p;
 }
-template<class T>
-Node<T>* List<T>::getFirst() {
-return anchor;
-    }
 
 template<class T>
-Node<T>* List<T>::getLast() { // get last one elem
+Node<T>* List<T>::getFirst() { // get the first elem
+    return anchor;
+}
+
+template<class T>
+Node<T>* List<T>::getLast() { // get the last one elem
     Node<T>* aux(anchor);
 
     if(isEmpty()){
@@ -158,7 +226,7 @@ Node<T>* List<T>::getPrevPos(Node<T>* p) { // get previous node of p
 }
 
 template<class T>
-Node<T>* List<T>::getNextPos(Node<T>* p) {
+Node<T>* List<T>::getNextPos(Node<T>* p) { // get next node of p
     if(!isValidPos(p)){
         return nullptr;
     }
@@ -167,7 +235,7 @@ Node<T>* List<T>::getNextPos(Node<T>* p) {
 }
 
 template<class T>
-T List<T>::retrieve(Node<T>* p) const {
+T List<T>::retrieve(Node<T>* p) const { // returs the data inside a node
     if(!isValidPos(p)){
         throw Exception("Invalid position, retrieve()");
     }
@@ -176,7 +244,7 @@ T List<T>::retrieve(Node<T>* p) const {
 
 
 template<class T>
-void List<T>::deleteAll() {
+void List<T>::deleteAll() {   // delete all nodes
     Node<T>* aux;
     while(anchor!= nullptr){
         aux = anchor;
@@ -186,7 +254,7 @@ void List<T>::deleteAll() {
 }
 
 template<class T>
-void List<T>::copyAll(const List<T> & s){
+void List<T>::copyAll(const List<T> & s){ // copy an entire list
     Node<T>* aux(s.anchor);
     Node<T>* lastInserted(nullptr);
     Node<T>* newNode;
@@ -209,21 +277,7 @@ void List<T>::copyAll(const List<T> & s){
 }
 
 template<class T>
-string List<T>::toString()
-{
-    string result;
-
-    Node<T>* aux(anchor);
-    while(aux != nullptr){
-        result+= aux->getData().toString()+ "\n";
-        aux = aux->getNext();
-    }
-    return result;
-}
-
-
-template<class T>
-Node<T>* List<T>::findData(const T& e){  // linear search
+Node<T>* List<T>::find(const T& e){  // linear search
     Node<T>* aux(anchor);
     while(aux!= nullptr and aux->getData() != e){
         aux = aux->getNext();
@@ -232,14 +286,14 @@ Node<T>* List<T>::findData(const T& e){  // linear search
 }
 
 template<class T>
- List<T> &List<T>::operator =(const List<T>& l){ // copy a hole list
-     deleteAll();
-     copyAll(l);
+List<T> &List<T>::operator =(const List<T>& l){ // copy a hole list
+     deleteAll();  // first delete this elements before coping the new ones
+     copyAll(l);  // call the method tha copies the list
      return *this;
 }
 
 template<class T>
- List<T>::~List(){ // destructor
+List<T>::~List(){ // destructor
      deleteAll();
  }
 #endif // LIST_H_INCLUDED
