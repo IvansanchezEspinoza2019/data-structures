@@ -1,3 +1,7 @@
+/*
+    This is a dynamic linked stack 
+*/
+
 #ifndef STACK_H
 #define STACK_H
 #include <iostream>
@@ -9,13 +13,15 @@ template<class T>
 class Stack{
   private:
    Node<T>* anchor;
-   void copyAll(const Stack<T> &s); //metodo copiar
+   void copyAll(const Stack<T> &s); // copy a stack
 
   public:
-    Stack(); //constructor
-    Stack(const Stack<T> &s); //constructor copia
-    ~Stack(); //destructor
+    // constructors
+    Stack(); 
+    Stack(const Stack<T>&); 
+    ~Stack();
 
+    //exception class
     class Exception : public std::exception {
         private:
             std::string msg;
@@ -28,70 +34,80 @@ class Stack{
         }
     };
 
-    //metodos
+    //methods
     bool isEmpty();
     void push(const T&);
     T pop();
     T getTop();
-    size_t getTam();
+    size_t size();
 
     void deleteAll();
-    Stack& operator = (const Stack<T> &); //operador de asignacion
+    Stack& operator = (const Stack<T> &); 
 
 };
-template<class T>
-Stack<T>::Stack() : anchor(nullptr){}
 
 template<class T>
-bool Stack<T>::isEmpty(){
+Stack<T>::Stack() : anchor(nullptr){} //init anchor
+
+template<class T>
+Stack<T>::Stack(const Stack<T> &s){ //copy constructor
+    copyAll(s);
+}
+
+
+template<class T>
+bool Stack<T>::isEmpty(){  //empty
     return anchor == nullptr;
 }
+
 template<class T>
-size_t Stack<T>::getTam(){
+size_t Stack<T>::size(){      // return the stack size
 	
 	Node<T>* aux= anchor;
 	size_t tam= 0;
+
 	while(aux!=nullptr){
-                tam= tam+1;
+        tam= tam+1;
 		aux = aux->getNext();
 	}	
 	return tam;
 }
+
 template<class T>
-void Stack<T>::push(const T& e){
+void Stack<T>::push(const T& e){  // push an element to the front
     Node<T>* aux= new Node<T>(e);
     if(aux ==nullptr){
-        throw Exception("Memoria no disponible, push()");
+        throw Exception("No memory available, push()");
     }
-    aux->setNext(anchor);
-    anchor = aux;
+    aux->setNext(anchor); 
+    anchor = aux;   //at first position
 }
 
 template<class T>
-T Stack<T>::pop(){
+T Stack<T>::pop(){   // return an deletes the front of the stack
     if(isEmpty()){
-        throw Exception("Insuficiencia de datos, pop()");
+        throw Exception("Empty stack, pop()");
     }
-   T result(anchor->getData());
-   Node<T>* aux(anchor);
+   T result(anchor->getData()); // get the front
+   Node<T>* aux(anchor);        // auxiliar node
 
-   anchor = anchor->getNext();
+   anchor = anchor->getNext();  // anchor is going to be the next elem
 
-   delete aux;
+   delete aux;                  // deletes the aux node
 
-   return result;
+   return result;               // return the front
 }
 
 template<class T>
-T Stack<T>::getTop(){
+T Stack<T>::getTop(){  // only return the data, but no dellete it
     if(isEmpty()){
-        throw Exception("Insuficiencia de datos, getTop");
+        throw Exception("Empty stack, getTop()");
     }
     return anchor->getData();
 }
 
 template<class T>
-void Stack<T>::deleteAll()
+void Stack<T>::deleteAll() // delete the stack
 {
     Node<T>* aux;
     while(anchor!= nullptr){
@@ -101,42 +117,42 @@ void Stack<T>::deleteAll()
     }
 }
 
-
 template<class T>
-void Stack<T>::copyAll(const Stack<T> &s)
+void Stack<T>::copyAll(const Stack<T> &s)  // copy all elements from other list
 {
+    if(s.anchor == nullptr){
+        anchor = nullptr;
+        return;
+    }
+
     Node<T>* aux(s.anchor);
-        Node<T>* lastInserted(nullptr);
-        Node<T>* newNode;
-        while (aux!=nullptr) {
-            newNode = new Node<T>(aux->getData());
-            if(newNode == nullptr){
-                throw Exception("Memoria no disponible, copyAll()");
-            }
-            if(lastInserted == nullptr){
-                anchor = newNode;
-            }
-            else{
-                lastInserted->setNext(newNode);
-            }
-            lastInserted = newNode;
-            aux = aux->getNext();
+    Node<T>* lastInserted(nullptr);
+    Node<T>* newNode;
+    while (aux!=nullptr) {
+        newNode = new Node<T>(aux->getData());
+        if(newNode == nullptr){
+            throw Exception("No memory available, copyAll()");
         }
+        if(lastInserted == nullptr){
+            anchor = newNode;
+        }
+        else{
+            lastInserted->setNext(newNode);
+        }
+        lastInserted = newNode;
+        aux = aux->getNext();
+    }
 }
 
 template<class T>
-Stack<T>::Stack(const Stack<T> &s){
-    copyAll(s);
-}
-template<class T>
-Stack<T>& Stack<T>::operator =(const Stack<T> &t)
+Stack<T>& Stack<T>::operator =(const Stack<T> &t) // copy a hole stack
 {
     copyAll(t);
     return *this;
 }
 
 template<class T>
-Stack<T>::~Stack() {
+Stack<T>::~Stack() {  // deletes all data
    deleteAll();
 }
 
