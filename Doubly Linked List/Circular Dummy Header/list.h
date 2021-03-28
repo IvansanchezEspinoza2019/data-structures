@@ -23,7 +23,7 @@ class List {
         // iterator methods
         class Iterator;
 
-        Iterator begin(){return Iterator(getFirst()); }
+        Iterator begin(){return Iterator(header->getNext()); }
         Iterator end(){return Iterator(header); }
 
         // exception class
