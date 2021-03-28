@@ -6,6 +6,9 @@
 #include<iostream>
 #include"list.h" // put your list DIRECTORY
 
+
+void printList(List<string> &);
+
 int main(){
     // instance of the Linked List
     List<string> strings; 
@@ -22,7 +25,7 @@ int main(){
 
     // print the list
     std::cout << "List: " << std::endl;
-    strings.print();
+    printList(strings);
     std::cout << std::endl;
 
     // to search into the list
@@ -58,13 +61,21 @@ int main(){
         
         //final list
         std::cout << "List updated: " << std::endl;
-        strings.print();
+        printList(strings);
         std::cout << std::endl;
     }
     else{
         // not in the list
         std::cout << "Could not find '" << name << "' into the list..." <<std::endl;
     }
+
+    strings.~List(); // delete everything
    
     return 0;
+}
+
+void printList(List<string> &list){  // print all elements by using the iterator method
+    for(auto it = list.begin(); it != list.end(); it++){
+        std::cout << *it <<"-";
+    }
 }
