@@ -38,6 +38,12 @@ class List {
         List<T>& operator = (const List<T>&);
         ~List(); 
 
+        // iterator class and methods
+        class Iterator;
+
+        Iterator begin(){return Iterator(anchor);}
+        Iterator end(){return Iterator(nullptr); }
+
         //methods
         bool isEmpty();
         void insertData(Node<T>*, const T&);
@@ -50,11 +56,43 @@ class List {
         Node<T>* getNextPos(Node<T>*);
         T retrieve(Node<T>*); 
         void deleteAll();
-        std::string toString(); 
-        void print();
 
         // lineal search
         Node<T>* findData(const T&); 
+
+        class Iterator{
+            private:
+                Node<T>* _it;
+            public:
+                Iterator():_it(nullptr){}
+                Iterator(Node<T>* ptr):_it(ptr){}
+
+                T operator*(){
+                    if(_it == nullptr){
+                        throw Exception("No data found, * operator");
+                    }
+                    return _it->getData();
+                }
+
+                bool operator !=(const Iterator &e){
+                    return   _it != e._it;
+                }
+
+                bool operator == (const Iterator &e){
+                    return _it == e._it;
+                }
+                // prefix
+                Iterator& operator++(){
+                    _it = _it->getNext();
+                    return *this;
+                }
+                
+                Iterator operator++(int){
+                    Iterator it = *this;
+                    _it = _it->getNext();
+                    return it;
+                }
+        };
 };
 
 #include "list.h"
@@ -217,31 +255,6 @@ void List<T>::copyAll(const List<T> & s){ // copy other list
         aux = aux->getNext();                   // next node of 2nd list
     }
 }
-
-template<class T>
-void List<T>::print(){                      // print all elements
-    Node<T>* aux(anchor);
-
-    while(aux != nullptr){
-        std::cout << aux->getData() << "-";
-        aux = aux->getNext();
-    }
-    std::cout << std::endl;
-}
-
-template<class T>
-string List<T>::toString() // converts all elems to string
-{
-    string result;
-
-    Node<T>* aux(anchor);
-    while(aux != nullptr){
-        result+= std::to_string(aux->getData())+ "\n";
-        aux = aux->getNext();
-    }
-    return result;
-}
-
 
 template<class T>
 Node<T>* List<T>::findData(const T& e){ // lineal search
