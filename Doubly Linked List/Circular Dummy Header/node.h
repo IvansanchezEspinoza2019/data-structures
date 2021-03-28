@@ -49,7 +49,7 @@ template<class T>
 Node<T>::Node(const T &e) : next(nullptr), prev(nullptr){
     dataPtr = new T(e);
     if(dataPtr == nullptr){
-    throw Exception("Memoria no dispobible, creando nodo nuevo");
+    throw Exception("No memory available, new Node()");
     }
 }
 
@@ -64,7 +64,7 @@ template<class T>
 T Node<T>::getData() const
 {
     if(dataPtr == nullptr){
-        throw Exception("Dato inexistente, getData");
+        throw Exception("No data found, getData()");
     }
     return *dataPtr;    //desreferenciar
 }
@@ -89,7 +89,7 @@ void Node<T>::setData(const T &e)
 {
     if(dataPtr == nullptr){
         if ((dataPtr = new T(e)) == nullptr){
-            throw Exception("Memoria no disponible, setData");
+            throw Exception("No memory available, setData()");
         }
     }
     else{
