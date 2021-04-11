@@ -1,3 +1,8 @@
+/*
+    This node has two pointers: one for the left children and 
+    one for the right children.
+*/
+
 #ifndef Node_H
 #define Node_H
 
@@ -7,6 +12,7 @@
 
 using namespace std;
 
+// exception class
 class NodeException : public std::exception
 {
 private:
@@ -21,18 +27,22 @@ public:
     }
 };
 
+// node definition
 template <class T>
 class Node
 {
 private:
     T* dataPtr;
-    Node <T>* left;
-    Node <T>* right;
+    Node <T>* left;     // left child
+    Node <T>* right;    // right child
+
 public:
+    // constructors
     Node();
     Node(const T&e);
     ~Node();
 
+    // methods
     T getData() const;
     void setData(const T &value);
 
@@ -46,6 +56,10 @@ public:
     void setDataPtr(T *value);
 };
 
+/*
+    Implementation of Main methods 
+*/
+
 template <class T>
 Node<T>::Node(): dataPtr(nullptr), left(nullptr), right(nullptr){}
 
@@ -55,7 +69,7 @@ Node<T>::Node(const T & e): left(nullptr), right(nullptr){
     dataPtr = new T(e);
 
     if (dataPtr == nullptr) {
-        throw NodeException("Memoria no disponile, creando nodo");
+        throw NodeException("No memory available, creating Node");
     }
 }
 
@@ -68,7 +82,7 @@ template <class T>
 T Node<T>::getData() const
 {
     if (dataPtr == nullptr) {
-        throw NodeException("Dato Inexistente, getData");
+        throw NodeException("No data, Node::getData()");
     }
 
     return *dataPtr;
@@ -79,7 +93,7 @@ void Node<T>::setData(const T &value)
 {
     if (dataPtr == nullptr) {
         if ((dataPtr = new T(value)) == nullptr) {
-            throw NodeException("Memoria no disponible, setData");
+            throw NodeException("No memory available, Node::setData()");
         }
     }
     else {
