@@ -6,6 +6,7 @@
 
 #include "node.h"
 
+// for throwing exceptions
 class Exception : public std::exception
 {
 private:
@@ -19,7 +20,7 @@ public:
         return msg.c_str();
     }
 };
-
+// classs definition
 template <class T>
 class AvlTree
 {
@@ -49,11 +50,12 @@ private:
     void doBalancing(Node<T>*&);
 
 public:
-
+    // constructors
     AvlTree();
     AvlTree(const AvlTree<T> &);
     ~AvlTree();
 
+    // methods
     void deleteAll();
     bool isEmpty();
     bool isLeaf(Node<T>*&);
@@ -68,6 +70,7 @@ public:
     Node<T>*& findData(const T&);
     Node<T>*& getRoot();
 
+
     void parsePreOrder();
     void parseInOrder();
     void parsePostOrder();
@@ -77,7 +80,7 @@ public:
 
 //privados
 template<class T>
-void AvlTree<T>::copyAll(Node<T> *a)
+void AvlTree<T>::copyAll(Node<T> *a) // copy the data from other avl tree
 {
   if(a!= nullptr){
       copyData(a->getData());
@@ -86,7 +89,7 @@ void AvlTree<T>::copyAll(Node<T> *a)
   }
 }
 template<class T>
-void AvlTree<T>::deleteAll(){
+void AvlTree<T>::deleteAll(){  // delete all data
     deleteAll(root);
 }
 
@@ -102,34 +105,33 @@ void AvlTree<T>::deleteAll(Node<T>*& x)
 }
 
 template<class T>
-void AvlTree<T>::insertData(Node<T> *& r, const T & e)
+void AvlTree<T>::insertData(Node<T> *& r, const T & e)  // inserts data at position 'p'
 {
-    if (r == nullptr) {//inserta como hoja
+    if (r == nullptr) {//inserts as a leaf
         if((r = new Node<T>(e)) == nullptr){
             throw Exception("Error");
         }
     }
-    else{// decide donde insertar
+    else{// decides to wich part belongs the new data based on its value(to the left or to the right part of the tree)
         if(e < r->getData())
             insertData(r->getLeft(),e);
         else{
             insertData(r->getRight(),e);
         }
-      //aqui sale despues del llamado recursivo
-      //aqui es donde podemos evaluar desbalanceco
-        doBalancing(r); //ya esta AVL
+       // now we have to check the tree balance
+        doBalancing(r); // balance the tree
     }
 }
 
 template<class T>
 void AvlTree<T>::copyData(Node<T> *& r, const T & e)
 {
-    if (r == nullptr) {//inserta como hoja
+    if (r == nullptr) {//inserts as a leaf 
         if((r = new Node<T>(e)) == nullptr){
             throw Exception("Error");
         }
     }
-    else{// decide donde insertar
+    else{
         if(e < r->getData())
             copyData(r->getLeft(),e);
         else{
@@ -139,7 +141,7 @@ void AvlTree<T>::copyData(Node<T> *& r, const T & e)
 }
 
 template<class T>
-Node<T> *&AvlTree<T>::getLowest(Node<T> *& r)
+Node<T> *&AvlTree<T>::getLowest(Node<T> *& r)  // get the lowest value of the tree
 {
     if (r == nullptr) {
         return r;
@@ -153,7 +155,7 @@ Node<T> *&AvlTree<T>::getLowest(Node<T> *& r)
 }
 
 template<class T>
-Node<T>*& AvlTree<T>::getHighest(Node<T> *& r)
+Node<T>*& AvlTree<T>::getHighest(Node<T> *& r)  // get the highest value
 {
     if(r == nullptr or r->getRight() == nullptr){
         return r;
@@ -163,7 +165,7 @@ Node<T>*& AvlTree<T>::getHighest(Node<T> *& r)
 }
 
 template<class T>
-unsigned AvlTree<T>::getHeight(Node<T> *& r)
+unsigned AvlTree<T>::getHeight(Node<T> *& r) // height
 {
     if (r == nullptr) {
         return 0;
@@ -177,7 +179,7 @@ unsigned AvlTree<T>::getHeight(Node<T> *& r)
 }
 
 template<class T>
-void AvlTree<T>::parsePreOrder(Node<T> *& r)
+void AvlTree<T>::parsePreOrder(Node<T> *& r)  
 {
     if (r == nullptr) {
         return;
@@ -218,7 +220,7 @@ void AvlTree<T>::parsePostOrder(Node<T> *& r)
     cout << r->getData() << " ";
 }
 template<class T>
-void AvlTree<T>::simpleLeftRot(Node<T> *& r)
+void AvlTree<T>::simpleLeftRot(Node<T> *& r) // make simple left rotation
 {
     Node<T>* aux1(r->getRight());
     Node<T>* aux2(aux1->getLeft());
@@ -229,7 +231,7 @@ void AvlTree<T>::simpleLeftRot(Node<T> *& r)
 }
 
 template<class T>
-void AvlTree<T>::simpleRightRot(Node<T> *&r)
+void AvlTree<T>::simpleRightRot(Node<T> *&r) // make simple right rotation
 {
     Node<T>* aux1(r->getLeft());
     Node<T>* aux2(aux1->getRight());
@@ -240,14 +242,14 @@ void AvlTree<T>::simpleRightRot(Node<T> *&r)
 }
 
 template<class T>
-void AvlTree<T>::doubleLeftRot(Node<T> *&r)
+void AvlTree<T>::doubleLeftRot(Node<T> *&r) // make double left rotation
 {
     simpleRightRot(r->getRight());
     simpleLeftRot(r);
 }
 
 template<class T>
-void AvlTree<T>::doubleRightRot(Node<T> *&r)
+void AvlTree<T>::doubleRightRot(Node<T> *&r)  // make double right rotation
 {
     simpleLeftRot(r->getLeft());
     simpleRightRot(r);
@@ -260,37 +262,38 @@ int AvlTree<T>::getBalanceFator(Node<T> *& r)
         return 0;
     }
     return getHeight(r->getRight()) -  getHeight(r->getLeft());
-
-
 }
 
 template<class T>
-void AvlTree<T>::doBalancing(Node<T> *&r)
+void AvlTree<T>::doBalancing(Node<T> *&r)  
 {
+    /*
+        Function that make the balance to de AVL Tree
+    */
     switch(getBalanceFator(r)){
-    case -2: //rotacion a la derecha
+    case -2: //right rotation
 
-        if (getBalanceFator(r->getLeft())== -1) { //simple
+        if (getBalanceFator(r->getLeft())== -1) { // simple right rotation
             simpleRightRot(r);
             std::cout<<"RSD: "<<r->getData()<<endl;
         }
         else{
-            //doble
+            // doble right rotation
             doubleRightRot(r);
-             std::cout<<"RDD: "<<r->getData()<<endl;
+            //std::cout<<"RDD: "<<r->getData()<<endl;
         }
         break;
 
-    case 2:    //rotacion a la izquierda
-        if (getBalanceFator(r->getRight()) == 1) {///daaaaaaaaaaa
-            //simple
+    case 2:    // left rotation
+        if (getBalanceFator(r->getRight()) == 1) {
+            // simple left rotation
             simpleLeftRot(r);
-             std::cout<<"RSI: "<<r->getData()<<endl;
+            //std::cout<<"RSI: "<<r->getData()<<endl;
         }
         else{
-            //doble
+            //doble left rotation
             doubleLeftRot(r);
-             std::cout<<"RDI: "<<r->getData()<<endl;
+            //std::cout<<"RDI: "<<r->getData()<<endl;
         }
         break;
     }
@@ -298,7 +301,6 @@ void AvlTree<T>::doBalancing(Node<T> *&r)
 
 
 //Publicos
-
 template<class T>
 AvlTree<T>::AvlTree(): root(nullptr){}
 
@@ -315,7 +317,7 @@ AvlTree<T>::~AvlTree()
 }
 
 template<class T>
-bool AvlTree<T>::isEmpty()
+bool AvlTree<T>::isEmpty() // empty tree
 {
     return root == nullptr;
 }
@@ -347,7 +349,7 @@ template<class T>
 Node<T>*& AvlTree<T>::deleteData(Node<T>*& pos, const T& e)
 {
     if(pos == nullptr){
-        throw Exception("Insuficiencia de datos, deleteData()");
+        throw Exception("Invalid position, deleteData()");
     }
     else if(e < pos->getData()){
         pos->setLeft(deleteData(pos->getLeft(),e));
