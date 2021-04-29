@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// node exception
 class NodeException : public std::exception
 {
 private:
@@ -55,7 +56,7 @@ Node<T>::Node(const T & e): left(nullptr), right(nullptr){
     dataPtr = new T(e);
 
     if (dataPtr == nullptr) {
-        throw NodeException("Memoria no disponile, creando nodo");
+        throw NodeException("No memory available, createNode()");
     }
 }
 
@@ -68,7 +69,7 @@ template <class T>
 T Node<T>::getData() const
 {
     if (dataPtr == nullptr) {
-        throw NodeException("Dato Inexistente, getData");
+        throw NodeException("Data not found, getData()");
     }
 
     return *dataPtr;
@@ -79,7 +80,7 @@ void Node<T>::setData(const T &value)
 {
     if (dataPtr == nullptr) {
         if ((dataPtr = new T(value)) == nullptr) {
-            throw NodeException("Memoria no disponible, setData");
+            throw NodeException("No memory available, setData()");
         }
     }
     else {
